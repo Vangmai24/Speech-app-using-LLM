@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speech Analyzer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6a1b9a;
+            --secondary-color: #9c27b0;
+            --background-color: #f3e5f5;
+            --text-color: #4a4a4a;
+            --white-color: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px 15px;
+        }
+
+        .card {
+            background-color: var(--white-color);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(106, 27, 154, 0.1);
+            padding: 30px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(106, 27, 154, 0.15);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: var(--secondary-color);
+            font-size: 1rem;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .section-title i {
+            margin-right: 10px;
+            font-size: 1.5rem;
+        }
+
+        .file-upload, .audio-record {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-label {
+            display: inline-block;
+            padding: 12px 25px;
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .file-label:hover {
+            background-color: var(--secondary-color);
+            transform: scale(1.05);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background-color: var(--secondary-color);
+            color: var(--white-color);
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-color);
+            transform: scale(1.05);
+        }
+
+        .btn:disabled {
+            background-color: #bdbdbd;
+            cursor: not-allowed;
+        }
+
+        .recording-status {
+            text-align: center;
+            color: var(--secondary-color);
+            margin-top: 15px;
+        }
+
+        .result-section {
+            margin-top: 30px;
+        }
+
+        .result-card {
+            background-color: #f3e5f5;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            word-break: break-word;
+        }
+
+        .result-card pre {
+            white-space: pre-wrap;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            max-width: 100%;
+        }
+
+        .result-card p {
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        .flash-messages {
+            list-style-type: none;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+
+        .flash-messages li {
+            background-color: #e1bee7;
+            color: var(--primary-color);
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            .card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Speech Analyzer</h1>
+            <p>Analyze your voice</p>
+        </div>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="flash-messages">
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        <div class="card">
+            <div class="section-title">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <h2>Upload</h2>
+            </div>
+            <div class="file-upload">
+                <form method="POST" enctype="multipart/form-data">
+                    <input type="file" id="audio_file" name="audio_file" accept=".mp3,.webm" class="file-input">
+                    <label for="audio_file" class="file-label">
+                        <i class="fas fa-file-upload"></i> Choose Audio File
+                    </label>
+                    <button type="submit" class="btn">
+                        <i class="fas fa-magic"></i> Analyze Audio
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="section-title">
+                <i class="fas fa-microphone"></i>
+                <h2>Record</h2>
+            </div>
+            <div class="audio-record">
+                <div>
+                    <button id="startRecording" class="btn">
+                        <i class="fas fa-play"></i> Start Recording
+                    </button>
+                    <button id="stopRecording" class="btn" disabled>
+                        <i class="fas fa-stop"></i> Stop Recording
+                    </button>
+                </div>
+                <div id="recordingStatus" class="recording-status" style="display: none;">
+                    Recording in progress...
+                </div>
+                <div id="analysisStatus" class="recording-status" style="display: none;">
+                    Analyzing your audio...
+                </div>
+            </div>
+        </div>
+
+        <div id="result" class="card result-section" {% if not result %}style="display: none;"{% endif %}>
+            <div class="section-title">
+                <i class="fas fa-chart-line"></i>
+                <h2>Analysis Result</h2>
+            </div>
+            <div class="result-card">
+                <pre id="resultText">{{ result }}</pre>
+                <p id="resultFile">{% if filename %}Results saved to: {{ filename }}{% endif %}</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let mediaRecorder;
+        let audioChunks = [];
+        let stream;
+
+        document.getElementById('startRecording').addEventListener('click', async () => {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                
+                mediaRecorder.ondataavailable = (event) => {
+                    audioChunks.push(event.data);
+                };
+
+                audioChunks = [];
+                mediaRecorder.start();
+                document.getElementById('startRecording').disabled = true;
+                document.getElementById('stopRecording').disabled = false;
+                document.getElementById('recordingStatus').style.display = 'block';
+            } catch (err) {
+                console.error("Error accessing the microphone:", err);
+                alert("Error accessing the microphone. Please make sure you have granted permission.");
+            }
+        });
+
+        document.getElementById('stopRecording').addEventListener('click', () => {
+            if (mediaRecorder && mediaRecorder.state !== "inactive") {
+                mediaRecorder.stop();
+                stream.getTracks().forEach(track => track.stop());
+                document.getElementById('startRecording').disabled = false;
+                document.getElementById('stopRecording').disabled = true;
+                document.getElementById('recordingStatus').style.display = 'none';
+                document.getElementById('analysisStatus').style.display = 'block';
+                
+                setTimeout(analyzeRecording, 100);
+            }
+        });
+
+        async function analyzeRecording() {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+            const reader = new FileReader();
+            reader.readAsDataURL(audioBlob);
+            reader.onloadend = async () => {
+                const base64Audio = reader.result;
+                try {
+                    const response = await fetch('/analyze_audio', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ audio_data: base64Audio }),
+                    });
+                    const result = await response.json();
+                    document.getElementById('analysisStatus').style.display = 'none';
+                    if (result.error) {
+                        alert('Error: ' + result.error);
+                    } else {
+                        document.getElementById('resultText').textContent = result.result;
+                        document.getElementById('resultFile').textContent = 'Results saved to: ' + result.filename;
+                        document.getElementById('result').style.display = 'block';
+                    }
+                } catch (error) {
+                    console.error("Error during analysis:", error);
+                    alert("An error occurred during analysis. Please try again.");
+                }
+            };
+        }
+
+        document.getElementById('audio_file').addEventListener('change', function() {
+            const fileName = this.files[0].name;
+            this.nextElementSibling.textContent = `Selected: ${fileName}`;
+        });
+    </script>
+</body>
+</html>
